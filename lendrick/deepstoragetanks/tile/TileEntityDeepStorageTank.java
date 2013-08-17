@@ -15,6 +15,7 @@ import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidContainerRegistry;
 import net.minecraftforge.liquids.LiquidStack;
 import net.minecraftforge.liquids.LiquidTank;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
@@ -26,15 +27,15 @@ import net.minecraft.world.World;
 public class TileEntityDeepStorageTank extends TileEntity implements ITankContainer {
 	public final LiquidTank tank = new LiquidTank(LiquidContainerRegistry.BUCKET_VOLUME * 2000000);
 	public static int dstID = 0;
-	public int thisID;
+	public Integer thisID;
 	
-	public static void sideLog(Level level, String msg) {
+	public void sideLog(Level level, String msg) {
 		Logger logger = FMLLog.getLogger();
 	    if(FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-	        logger.log(level, "Server-side: " + msg);
+	        logger.log(level, "Server-side: " + thisID.toString() + " " + msg);
 	    }
 	    else if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-	        logger.log(level, "Client-side: " + msg);
+	        logger.log(level, "Client-side: " + thisID.toString() + " " + msg);
 	    }
 	    else {
 	        logger.log(level, "Unknown-side?: " + msg);
@@ -43,12 +44,11 @@ public class TileEntityDeepStorageTank extends TileEntity implements ITankContai
 	
 	public TileEntityDeepStorageTank() 
 	{
-		this.
 		thisID = dstID;
 		dstID++;
 		Logger myLog = FMLLog.getLogger();
-    	sideLog(java.util.logging.Level.INFO, "Creating new Deep Storage Tank Tile Entity");
-    	sideLog(java.util.logging.Level.INFO, ((Integer)thisID).toString());
+    	//sideLog(java.util.logging.Level.INFO, "Creating new Deep Storage Tank Tile Entity");
+    	//		sideLog(java.util.logging.Level.INFO, ((Integer)thisID).toString());
 	}
 	
     /**
@@ -129,54 +129,41 @@ public class TileEntityDeepStorageTank extends TileEntity implements ITankContai
 
     @Override
     public void readFromNBT(NBTTagCompound data) {
-		Logger myLog = FMLLog.getLogger();
-    	sideLog(java.util.logging.Level.INFO, "readFromNBT");
-    	sideLog(java.util.logging.Level.INFO, ((Integer)thisID).toString());
+    	//sideLog(java.util.logging.Level.INFO, "readFromNBT");
     	super.readFromNBT(data);
 		LiquidStack liquid = LiquidStack.loadLiquidStackFromNBT(data.getCompoundTag("tank"));
 		if (liquid != null) {
 			tank.setLiquid(liquid);
+			//sideLog(java.util.logging.Level.INFO, "Read Amount: " + ((Integer)liquid.amount).toString());
 		}
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound data) {    	
-		Logger myLog = FMLLog.getLogger();
-    	sideLog(java.util.logging.Level.INFO, "writeToNBT");
-    	sideLog(java.util.logging.Level.INFO, ((Integer)thisID).toString());
+    public void writeToNBT(NBTTagCompound data) {    			
+    	//sideLog(java.util.logging.Level.INFO, "writeToNBT");
     	if (tank.containsValidLiquid()) {
     		data.setTag("tank", tank.getLiquid().writeToNBT(new NBTTagCompound()));
     	}
     	super.writeToNBT(data);
     }
     
-    /*
     @Override
     public Packet getDescriptionPacket() {
-    	ByteArrayOutputStream bos = new ByteArrayOutputStream(24);
-    	DataOutputStream outputStream = new DataOutputStream(bos);
-    	try {
-    	    outputStream.writeInt(this.xCoord);
-    	    outputStream.writeInt(this.yCoord);
-    	    outputStream.writeInt(this.zCoord);
-    	    outputStream.writeInt(tank.getLiquid().itemID);
-    	    outputStream.writeInt(tank.getLiquid().amount);
-    	    outputStream.writeInt(tank.getLiquid().itemMeta);
-    	} catch (Exception ex) {
-    	    ex.printStackTrace();
-    	}
+    	sideLog(java.util.logging.Level.INFO, "getDescriptionPacket");
+        Packet132TileEntityData packet = (Packet132TileEntityData) super.getDescriptionPacket();
+        NBTTagCompound tag = packet != null ? packet.customParam1 : new NBTTagCompound();
 
-    	Packet250CustomPayload packet = new Packet250CustomPayload();
-    	packet.channel = "DeepStorageTanks";
-    	packet.data = bos.toByteArray();
-    	packet.length = bos.size();
-    	
-    	return packet;
+    	if (tank.containsValidLiquid()) {
+    		//sideLog(java.util.logging.Level.INFO, "Amount: " + ((Integer)tank.getLiquid().amount).toString());
+        	tag.setTag("tank", tank.getLiquid().writeToNBT(new NBTTagCompound()));
+    	}    	
+
+        return new Packet132TileEntityData(xCoord, yCoord, zCoord, 1, tag);
     }
     
-    @Override
-    public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
-        super.onDataPacket(net, pkt);
-    }
-    */
+	@Override
+	public void onDataPacket(INetworkManager net, Packet132TileEntityData packet) {
+		//sideLog(java.util.logging.Level.INFO, "onDataPacket");
+        readFromNBT(packet.customParam1);
+	}
 }

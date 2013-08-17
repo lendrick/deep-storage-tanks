@@ -22,8 +22,8 @@ public class BlockDeepStorageTank extends BlockContainer {
     
     @Override
 	public TileEntity createNewTileEntity(World world) {
-		Logger myLog = FMLLog.getLogger();
-    	myLog.log(java.util.logging.Level.INFO, "createNewTileEntity");
+		//Logger myLog = FMLLog.getLogger();
+    	//myLog.log(java.util.logging.Level.INFO, "createNewTileEntity");
     	return new TileEntityDeepStorageTank();
 	}
     

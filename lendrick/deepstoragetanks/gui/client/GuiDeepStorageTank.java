@@ -41,6 +41,7 @@ public class GuiDeepStorageTank extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
+		//tileEntity.worldObj.markBlockForUpdate(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 		LiquidTank tank = tileEntity.tank;
 		if(tank.containsValidLiquid()) {
@@ -53,12 +54,6 @@ public class GuiDeepStorageTank extends GuiContainer {
 		} else {
 			fontRenderer.drawString("Liquid:", 30, 30, 4210752);
 			fontRenderer.drawString("None", 30, 40, 4210752);
-		}
-		
-		fontRenderer.drawString("Position:", 30, 100, 4210752);
-		fontRenderer.drawString(((Integer)tileEntity.xCoord).toString(), 30, 110, 4210752);
-		fontRenderer.drawString(((Integer)tileEntity.yCoord).toString(), 30, 120, 4210752);
-		fontRenderer.drawString(((Integer)tileEntity.zCoord).toString(), 30, 130, 4210752);
-		fontRenderer.drawString(((Integer)tileEntity.thisID).toString(), 30, 140, 4210752);
+		}		
 	}
 }
