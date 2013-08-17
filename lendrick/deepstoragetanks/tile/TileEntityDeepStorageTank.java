@@ -149,7 +149,7 @@ public class TileEntityDeepStorageTank extends TileEntity implements ITankContai
     
     @Override
     public Packet getDescriptionPacket() {
-    	sideLog(java.util.logging.Level.INFO, "getDescriptionPacket");
+    	//sideLog(java.util.logging.Level.INFO, "getDescriptionPacket");
         Packet132TileEntityData packet = (Packet132TileEntityData) super.getDescriptionPacket();
         NBTTagCompound tag = packet != null ? packet.customParam1 : new NBTTagCompound();
 

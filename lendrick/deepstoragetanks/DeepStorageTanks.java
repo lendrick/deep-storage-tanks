@@ -18,6 +18,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.Property;
+import net.minecraftforge.common.Configuration;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
@@ -37,6 +39,8 @@ import java.util.logging.Logger;
 channels={"DeepStorageTanks"}, packetHandler = PacketHandlerDeepStorageTank.class)
 
 public class DeepStorageTanks {
+	public static int deepStorageTankBlockID = 1701;
+	
 	private static Block findBlock(String itemname) {
         for(Block b : Block.blocksList){
         	if(b != null) {
@@ -70,7 +74,10 @@ public class DeepStorageTanks {
    
     @PreInit    // used in 1.5.2
     public void preInit(FMLPreInitializationEvent event) {
-            // Stub Method
+        Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+        config.load();
+        deepStorageTankBlockID = config.getBlock("DeepStorageTank", deepStorageTankBlockID).getInt();
+        config.save();
     }
    
     @Init       // used in 1.5.2
@@ -89,9 +96,11 @@ public class DeepStorageTanks {
         //GameData.dumpRegistry(Minecraft.getMinecraftDir());
         
         Item machineBlock = findItem("item.mfr.machineblock");
+        Block tesseract = findBlock("tile.thermalexpansion.tesseract");
         Block bcTank = findBlock("tile.tankBlock");
-        
+       
         /*
+        // One would think that dumping the game registry would work, but it doesn't seem to have all the blocks in it.
         for(Block b : Block.blocksList){
         	if(b != null) {
         		myLog.log(Level.INFO, String.format("Block %d: %s / %s", b.blockID, b.getClass().getName(), b.getUnlocalizedName()));
@@ -104,17 +113,18 @@ public class DeepStorageTanks {
         	}
     	}
     	*/
+    	        
+        ItemStack dstStack = new ItemStack(deepStorageTankBlockID, 1, 0);
         
-        ItemStack dstStack = new ItemStack(1700, 1, 0);
-        
-        if(bcTank != null && machineBlock != null) {
+        if(bcTank != null && machineBlock != null && tesseract != null) {
+            ItemStack liquidTesseract = new ItemStack(tesseract, 1, 1);
 	    	GameRegistry.addRecipe(new ShapedOreRecipe(dstStack, new Object[]
 				{
 				"GGG",
-				"PTP",
+				"LTL",
 				"EME",
 				'G', "sheetPlastic",
-				'P', Item.enderPearl,
+				'L', liquidTesseract,
 				'E', Item.eyeOfEnder,
 				'T', bcTank, //bcTank.blockID,
 				'M', machineBlock
@@ -131,7 +141,7 @@ public class DeepStorageTanks {
             // Stub Method
     }
     
-    public final static Block blockDeepStorageTank = new BlockDeepStorageTank(1700, Material.ground)
+    public final static Block blockDeepStorageTank = new BlockDeepStorageTank(deepStorageTankBlockID, Material.ground)
     .setHardness(0.5F).setStepSound(Block.soundGravelFootstep)
     .setUnlocalizedName("deepStorageTank").setCreativeTab(CreativeTabs.tabBlock);
 }
